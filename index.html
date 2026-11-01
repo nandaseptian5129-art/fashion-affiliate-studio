@@ -27,8 +27,8 @@
 <section class="card">
 <h2>2. Masukkan foto dan info outfit</h2>
 <div class="grid">
-<div><label for="modelFile">Foto model / karakter</label><input type="file" accept="image/*" id="modelFile" onchange="showSelectedPhoto(this,'modelPreview','modelStatus','Belum ada foto model.')"><p class="hint" id="modelStatus">Belum ada foto model.</p><img id="modelPreview" class="preview" alt="Pratinjau foto model"></div>
-<div><label for="outfitFile">Foto outfit / produk</label><input type="file" accept="image/*" id="outfitFile" onchange="showSelectedPhoto(this,'outfitPreview','outfitStatus','Belum ada foto outfit.')"><p class="hint" id="outfitStatus">Belum ada foto outfit.</p><img id="outfitPreview" class="preview" alt="Pratinjau foto outfit"></div>
+<div><label for="modelFile">Foto model / karakter</label><input type="file" accept="image/*" id="modelFile"><p class="hint" id="modelStatus">Belum ada foto model.</p><img id="modelPreview" class="preview" alt="Pratinjau foto model"></div>
+<div><label for="outfitFile">Foto outfit / produk</label><input type="file" accept="image/*" id="outfitFile"><p class="hint" id="outfitStatus">Belum ada foto outfit.</p><img id="outfitPreview" class="preview" alt="Pratinjau foto outfit"></div>
 </div>
 <div id="motionUpload" class="hidden"><label for="motionFile">Video referensi gerakan (Motion Control)</label><input type="file" accept="video/*" id="motionFile"><p class="hint">Video ini dipakai sebagai referensi saat kamu mengunggahnya ke Google Flow.</p></div>
 <label for="details">Detail produk yang benar-benar diketahui (opsional)</label><textarea id="details" placeholder="Contoh: blouse warna dusty pink, kerah, kancing depan, lengan panjang..."></textarea>
@@ -90,6 +90,7 @@ window.showSelectedPhoto=function(input,imgId,statusId,emptyText){
  reader.onerror=function(){status.textContent='HP gagal membaca file ini. Coba pilih foto lain.';};
  reader.readAsDataURL(file);
 };
+['modelFile','outfitFile'].forEach((id)=>{const input=document.getElementById(id);input.addEventListener('click',function(){this.value='';});input.addEventListener('change',function(){const isModel=id==='modelFile';window.showSelectedPhoto(this,isModel?'modelPreview':'outfitPreview',isModel?'modelStatus':'outfitStatus',isModel?'Belum ada foto model.':'Belum ada foto outfit.');});});
 window.generate=function(){
  const detail=document.getElementById('details').value.trim();
  const kind=document.getElementById('productKind').value;
