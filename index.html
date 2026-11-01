@@ -78,6 +78,28 @@
 </section>
 </main>
 <script>
+/* Penangan upload foto mandiri, terpisah dari skrip utama. */
+(function(){
+ function bindPhoto(inputId,imgId,statusId,emptyText,successText){
+  var input=document.getElementById(inputId);if(!input)return;
+  input.addEventListener('click',function(){var st=document.getElementById(statusId);if(st)st.textContent='Pemilih galeri dibuka — pilih foto.';});
+  input.addEventListener('change',function(){
+   var file=input.files&&input.files[0],img=document.getElementById(imgId),st=document.getElementById(statusId);
+   if(!file){if(st)st.textContent=emptyText;return;}
+   if(!file.type||file.type.indexOf('image/')!==0){if(st)st.textContent='File bukan gambar. Pilih JPG atau PNG.';return;}
+   if(st)st.textContent='Foto dipilih: '+file.name+' — sedang dimuat...';
+   var reader=new FileReader();
+   reader.onload=function(){img.onload=function(){img.style.display='block';if(st)st.textContent='✓ '+successText+file.name;};img.onerror=function(){if(st)st.textContent='Gagal menampilkan foto. Coba JPG atau PNG.';};img.src=reader.result;};
+   reader.onerror=function(){if(st)st.textContent='HP gagal membaca foto. Coba pilih foto lain.';};
+   reader.readAsDataURL(file);
+  });
+ }
+ bindPhoto('modelFile','modelPreview','modelStatus','Belum ada foto model.','Foto model berhasil masuk: ');
+ bindPhoto('outfitFile','outfitPreview','outfitStatus','Belum ada foto outfit.','Foto outfit berhasil masuk: ');
+ bindPhoto('coverImage','coverPhoto','coverUploadStatus','Belum ada foto dipilih.','Foto sampul berhasil masuk: ');
+})();
+</script>
+<script>
 let mode='image';
 function setMode(m){mode=m;document.getElementById('tabImage').classList.toggle('active',m==='image');document.getElementById('tabMotion').classList.toggle('active',m==='motion');document.getElementById('motionUpload').classList.toggle('hidden',m!=='motion');document.getElementById('modeHint').textContent=m==='image'?'Foto model menjadi frame awal. Gerakan dibuat dari instruksi prompt.':'Foto karakter + video referensi. Ikuti gerakan video referensi sedekat mungkin dan pertahankan background foto karakter.'}
 window.showSelectedPhoto=function(input,imgId,statusId,emptyText){
@@ -90,7 +112,7 @@ window.showSelectedPhoto=function(input,imgId,statusId,emptyText){
  reader.onerror=function(){status.textContent='HP gagal membaca file ini. Coba pilih foto lain.';};
  reader.readAsDataURL(file);
 };
-['modelFile','outfitFile'].forEach((id)=>{const input=document.getElementById(id);input.addEventListener('click',function(){this.value='';});input.addEventListener('change',function(){const isModel=id==='modelFile';window.showSelectedPhoto(this,isModel?'modelPreview':'outfitPreview',isModel?'modelStatus':'outfitStatus',isModel?'Belum ada foto model.':'Belum ada foto outfit.');});});
+// Upload model/outfit ditangani oleh skrip mandiri.
 window.generate=function(){
  const detail=document.getElementById('details').value.trim();
  const kind=document.getElementById('productKind').value;
@@ -122,7 +144,7 @@ function fallbackCopy(t){const a=document.createElement('textarea');a.value=t;do
 function copyAll(){const ids=['prompt','tryon','caption','hashtags','coverTitle','concept'];fallbackCopy(ids.map(id=>document.getElementById(id).textContent).join('\n\n'))}
 function updateCover(){const title=document.getElementById('coverInput').value.trim()||'OUTFIT CHECK';const style=document.getElementById('coverStyle').value;const art=document.getElementById('coverArt');art.className='cover-art '+(style==='earth'?'':style);document.getElementById('coverPreviewTitle').textContent=title;document.getElementById('coverKicker').textContent=document.getElementById('coverSub').value.trim()||'OUTFIT CHECK'}
 document.getElementById('coverInput').addEventListener('input',updateCover);document.getElementById('coverSub').addEventListener('input',updateCover);
-document.getElementById('coverImage').addEventListener('change',e=>{const f=e.target.files&&e.target.files[0];const status=document.getElementById('coverUploadStatus');const img=document.getElementById('coverPhoto');if(!f){status.textContent='Belum ada foto dipilih.';return;}if(!f.type||!f.type.startsWith('image/')){status.textContent='File harus berupa foto.';return;}status.textContent='Memuat foto...';const reader=new FileReader();reader.onload=()=>{img.onload=()=>{img.style.display='block';status.textContent='✓ Foto berhasil masuk. Pratinjau sampul sudah diperbarui.';};img.onerror=()=>{status.textContent='Foto tidak bisa dibaca. Coba pilih JPG atau PNG.';};img.src=reader.result;};reader.onerror=()=>{status.textContent='Gagal membaca foto. Coba pilih ulang dari Galeri.';};reader.readAsDataURL(f);});
+// Upload sampul ditangani oleh skrip mandiri.
 function downloadCover(){
  const title=document.getElementById('coverInput').value.trim()||'OUTFIT CHECK';
  const kicker=document.getElementById('coverSub').value.trim()||'OUTFIT CHECK';
