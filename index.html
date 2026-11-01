@@ -51,7 +51,7 @@
 <button class="primary" id="generateBtn" type="button">Buat 1 paket konten</button>
 <p class="hint">Satu klik menghasilkan satu paket. Untuk membuat konten kedua dari produk sama, unggah ulang dan buat paket baru.</p>
 <div id="output" class="hidden">
-<label>Prompt Google Flow</label><div class="result" id="prompt"></div><div class="actions"><button type="button" onclick="copy('prompt')">Salin prompt</button></div>
+<label for="prompt">Prompt Google Flow</label><textarea class="result" id="prompt" rows="12" readonly aria-label="Prompt Google Flow akan tampil di sini" placeholder="Tekan Buat 1 paket konten untuk menampilkan prompt Flow."></textarea><div class="actions"><button type="button" onclick="copy('prompt')">Salin prompt</button></div>
 <label>Prompt ganti outfit (untuk AI editor gambar)</label><div class="result" id="tryon"></div><div class="actions"><button type="button" onclick="copy('tryon')">Salin prompt ganti outfit</button></div>
 <label>Caption TikTok</label><div class="result" id="caption"></div>
 <label>Hashtag</label><div class="result" id="hashtags"></div>
@@ -144,7 +144,7 @@ let prompt='';
 }
 function copy(id){const t=document.getElementById(id).textContent;if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).then(()=>alert('Tersalin!')).catch(()=>fallbackCopy(t))}else fallbackCopy(t)}
 function fallbackCopy(t){const a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();try{document.execCommand('copy');alert('Tersalin!')}catch(e){alert('Tekan lama teks, lalu pilih Salin.')}a.remove()}
-function copyAll(){const ids=['prompt','tryon','caption','hashtags','coverTitle','concept'];fallbackCopy(ids.map(id=>document.getElementById(id).textContent).join('\n\n'))}
+function copyAll(){const ids=['prompt','tryon','caption','hashtags','coverTitle','concept'];fallbackCopy(ids.map(id=>{const el=document.getElementById(id);return ('value' in el?el.value:el.textContent)||''}).join('\n\n'))}
 function updateCover(){const title=document.getElementById('coverInput').value.trim()||'OUTFIT CHECK';const style=document.getElementById('coverStyle').value;const art=document.getElementById('coverArt');art.className='cover-art '+(style==='earth'?'':style);document.getElementById('coverPreviewTitle').textContent=title;document.getElementById('coverKicker').textContent=document.getElementById('coverSub').value.trim()||'OUTFIT CHECK'}
 document.getElementById('coverInput').addEventListener('input',updateCover);document.getElementById('coverSub').addEventListener('input',updateCover);
 // Upload sampul ditangani oleh skrip mandiri.
