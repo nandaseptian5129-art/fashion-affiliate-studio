@@ -27,8 +27,8 @@
 <section class="card">
 <h2>2. Masukkan foto dan info outfit</h2>
 <div class="grid">
-<div><label for="modelFile">Foto model / karakter</label><input type="file" accept="image/*" id="modelFile"><p class="hint" id="modelStatus">Belum ada foto model.</p><img id="modelPreview" class="preview" alt="Pratinjau foto model"></div>
-<div><label for="outfitFile">Foto outfit / produk</label><input type="file" accept="image/*" id="outfitFile"><p class="hint" id="outfitStatus">Belum ada foto outfit.</p><img id="outfitPreview" class="preview" alt="Pratinjau foto outfit"></div>
+<div><label for="modelFile">Foto model / karakter</label><input type="file" accept="image/*" id="modelFile" onchange="showSelectedPhoto(this,'modelPreview','modelStatus','Belum ada foto model.')"><p class="hint" id="modelStatus">Belum ada foto model.</p><img id="modelPreview" class="preview" alt="Pratinjau foto model"></div>
+<div><label for="outfitFile">Foto outfit / produk</label><input type="file" accept="image/*" id="outfitFile" onchange="showSelectedPhoto(this,'outfitPreview','outfitStatus','Belum ada foto outfit.')"><p class="hint" id="outfitStatus">Belum ada foto outfit.</p><img id="outfitPreview" class="preview" alt="Pratinjau foto outfit"></div>
 </div>
 <div id="motionUpload" class="hidden"><label for="motionFile">Video referensi gerakan (Motion Control)</label><input type="file" accept="video/*" id="motionFile"><p class="hint">Video ini dipakai sebagai referensi saat kamu mengunggahnya ke Google Flow.</p></div>
 <label for="details">Detail produk yang benar-benar diketahui (opsional)</label><textarea id="details" placeholder="Contoh: blouse warna dusty pink, kerah, kancing depan, lengan panjang..."></textarea>
@@ -80,8 +80,16 @@
 <script>
 let mode='image';
 function setMode(m){mode=m;document.getElementById('tabImage').classList.toggle('active',m==='image');document.getElementById('tabMotion').classList.toggle('active',m==='motion');document.getElementById('motionUpload').classList.toggle('hidden',m!=='motion');document.getElementById('modeHint').textContent=m==='image'?'Foto model menjadi frame awal. Gerakan dibuat dari instruksi prompt.':'Foto karakter + video referensi. Ikuti gerakan video referensi sedekat mungkin dan pertahankan background foto karakter.'}
-function preview(input,img,status){input.addEventListener('change',()=>{const f=input.files&&input.files[0];if(!f){status.textContent='Belum ada foto dipilih.';img.style.display='none';img.removeAttribute('src');return;}if(!f.type||!f.type.startsWith('image/')){status.textContent='Pilih file gambar JPG, PNG, atau WEBP.';return;}status.textContent='Memuat foto...';const reader=new FileReader();reader.onload=()=>{img.onload=()=>{img.style.display='block';status.textContent='✓ Foto berhasil dimasukkan dan siap untuk prompt.';};img.onerror=()=>{img.style.display='none';status.textContent='Gambar gagal ditampilkan. Coba pilih foto JPG atau PNG.';};img.src=reader.result;};reader.onerror=()=>{status.textContent='Gagal membaca file. Pilih ulang foto dari galeri.';};reader.readAsDataURL(f);});}
-preview(document.getElementById('modelFile'),document.getElementById('modelPreview'),document.getElementById('modelStatus'));preview(document.getElementById('outfitFile'),document.getElementById('outfitPreview'),document.getElementById('outfitStatus'));
+window.showSelectedPhoto=function(input,imgId,statusId,emptyText){
+ const img=document.getElementById(imgId),status=document.getElementById(statusId),file=input.files&&input.files.length?input.files[0]:null;
+ if(!file){status.textContent=emptyText;img.style.display='none';img.removeAttribute('src');return;}
+ status.textContent='Foto terpilih: '+file.name+' — sedang dibaca...';
+ if(!file.type||!file.type.startsWith('image/')){status.textContent='File bukan gambar. Pilih JPG atau PNG.';return;}
+ const reader=new FileReader();
+ reader.onload=function(){img.onload=function(){img.style.display='block';status.textContent='✓ Foto berhasil masuk: '+file.name;};img.onerror=function(){status.textContent='Gagal menampilkan foto. Coba JPG/PNG.';};img.src=reader.result;};
+ reader.onerror=function(){status.textContent='HP gagal membaca file ini. Coba pilih foto lain.';};
+ reader.readAsDataURL(file);
+};
 window.generate=function(){
  const detail=document.getElementById('details').value.trim();
  const kind=document.getElementById('productKind').value;
@@ -152,6 +160,7 @@ function downloadCover(){
  try{const data=c.toDataURL('image/png');const link=document.createElement('a');link.href=data;link.download='sampul-fashion-affiliate.png';link.style.display='none';document.body.appendChild(link);link.click();link.remove();alert('Sampul berhasil dibuat. Cek folder Download di HP.')}
  catch(e){alert('Browser menolak menyimpan gambar. Coba buka halaman ini di Chrome.')}
 }
+document.getElementById('generateBtn').onclick=window.generate;
 updateCover();
 </script>
 </body></html>
