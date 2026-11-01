@@ -1,16 +1,127 @@
 <!doctype html>
-<html lang="id"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#6d5147"><title>Fashion Affiliate Studio</title>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#6d5147">
+<title>Fashion Affiliate Studio</title>
 <style>
-:root{--bg:#f7f2ee;--card:#fff;--ink:#302722;--muted:#796d65;--accent:#765548;--line:#e8ddd5}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 system-ui,-apple-system,Segoe UI,sans-serif}.wrap{max-width:760px;margin:auto;padding:20px 14px 48px}.hero{background:linear-gradient(135deg,#eadbd0,#f8eee7);padding:24px;border-radius:22px;margin-bottom:16px}.hero h1{font-size:26px;margin:0 0 5px}.hero p{margin:0;color:#68584e}.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:17px;margin:13px 0}.card h2{font-size:18px;margin:0 0 12px}.tabs{display:flex;gap:8px;flex-wrap:wrap}.tab,button{border:0;border-radius:12px;padding:11px 14px;background:#eee5df;color:var(--ink);font-weight:650;cursor:pointer}.tab.active,button.primary{background:var(--accent);color:#fff}.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}label{display:block;font-weight:650;margin:10px 0 5px}input,select,textarea{width:100%;border:1px solid var(--line);border-radius:11px;padding:11px;background:#fff;color:var(--ink);font:inherit}textarea{min-height:100px;resize:vertical}.hint,.small{font-size:12px;color:var(--muted)}.preview{width:100%;max-height:240px;object-fit:contain;background:#f4efeb;border-radius:12px;margin-top:8px;display:none}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.result{white-space:pre-wrap;background:#fbf8f6;border:1px solid var(--line);border-radius:12px;padding:13px;min-height:100px;overflow-wrap:anywhere}.ending{display:grid;grid-template-columns:1fr 1fr;gap:8px}.ending label{font-weight:500;background:#faf7f5;border:1px solid var(--line);border-radius:10px;padding:9px;margin:0}.ending input{width:auto}.notice{background:#fff5df;border:1px solid #f0dfb9;padding:11px;border-radius:12px;font-size:13px}.hidden{display:none}@media(max-width:520px){.grid{grid-template-columns:1fr}.hero h1{font-size:23px}}
-</style></head><body><main class="wrap"><header class="hero"><h1>Fashion Affiliate Studio</h1><p>Satu foto produk = satu paket konten. Siapkan prompt untuk Google Flow dan materi TikTok.</p></header>
-<section class="card"><h2>1. Pilih workflow video</h2><div class="tabs"><button class="tab active" id="tabImage" onclick="setMode('image')">Flow biasa · Image-to-Video</button><button class="tab" id="tabMotion" onclick="setMode('motion')">Motion Control</button></div><p class="hint" id="modeHint">Foto model menjadi frame awal. Flow membuat gerakan berdasarkan prompt.</p></section>
-<section class="card"><h2>2. Foto model & outfit</h2><div class="grid"><div><label>Foto model utama (opsional untuk penyusunan prompt)</label><input type="file" accept="image/*" id="modelFile"><img id="modelPreview" class="preview" alt="Pratinjau model"></div><div><label>Foto outfit / produk</label><input type="file" accept="image/*" id="outfitFile"><img id="outfitPreview" class="preview" alt="Pratinjau outfit"></div></div><div id="motionUpload" class="hidden"><label>Video referensi gerakan (khusus Motion Control)</label><input type="file" accept="video/*" id="motionFile"><p class="hint">Unggah video gerakan yang ingin ditiru di Google Flow.</p></div><label>Detail produk yang diketahui (opsional)</label><textarea id="details" placeholder="Contoh: blouse garis pink-putih, kerah renda, kancing depan..."></textarea></section>
-<section class="card"><h2>3. Pilih akhiran video</h2><div class="ending"><label><input type="radio" name="ending" value="peace sign ✌️" checked> Peace sign ✌️</label><label><input type="radio" name="ending" value="finger heart 🫰"> Finger heart 🫰</label><label><input type="radio" name="ending" value="natural ending"> Natural ending</label><label><input type="radio" name="ending" value="hand-heart near cheek 🫶"> Hand-heart dekat pipi 🫶</label></div><p class="hint">Akhiran dilakukan setelah gerakan review produk selesai.</p></section>
-<section class="card"><h2>4. Buat paket konten</h2><button class="primary" onclick="generate()">Buat 1 paket konten</button><p class="hint">Satu kali klik menghasilkan satu paket untuk outfit yang diunggah.</p><div id="output" class="hidden"><label>Prompt Google Flow</label><div class="result" id="prompt"></div><div class="actions"><button onclick="copy('prompt')">Salin prompt</button></div><label>Caption</label><div class="result" id="caption"></div><label>Deskripsi produk</label><div class="result" id="description"></div><label>Hashtag</label><div class="result" id="hashtags"></div><label>Judul sampul</label><div class="result" id="cover"></div><label>Konsep video</label><div class="result" id="concept"></div><div class="actions"><button class="primary" onclick="copyAll()">Salin semua hasil</button></div></div></section>
-<section class="card"><h2>Catatan penting</h2><div class="notice">Aplikasi ini menyusun prompt dan paket konten. Pembuatan video tetap dilakukan di Google Flow. Fitur mengganti pakaian dengan AI langsung di halaman ini belum terintegrasi; jangan menganggap unggah foto saja sudah menghasilkan gambar try-on.</div><p class="small">Foto yang dipilih hanya dipakai untuk pratinjau di halaman ini dan tidak diunggah ke server oleh file HTML ini.</p></section>
-</main><script>
-let mode='image';function setMode(m){mode=m;document.getElementById('tabImage').classList.toggle('active',m==='image');document.getElementById('tabMotion').classList.toggle('active',m==='motion');document.getElementById('motionUpload').classList.toggle('hidden',m!=='motion');document.getElementById('modeHint').textContent=m==='image'?'Foto model menjadi frame awal. Flow membuat gerakan berdasarkan prompt.':'Foto karakter + video referensi. Gerakan mengikuti video referensi; background foto karakter harus dipertahankan.'}
-function preview(input,img){input.addEventListener('change',()=>{const f=input.files[0];if(!f)return;img.src=URL.createObjectURL(f);img.style.display='block'})}preview(document.getElementById('modelFile'),document.getElementById('modelPreview'));preview(document.getElementById('outfitFile'),document.getElementById('outfitPreview'));
-function generate(){const detail=document.getElementById('details').value.trim()||'Tampilkan hanya detail pakaian yang benar-benar terlihat pada foto referensi; jangan mengarang fitur, bahan, ukuran, atau klaim.';const ending=document.querySelector('input[name="ending"]:checked').value;const common=`Buat video fashion review vertikal 9:16 yang fotorealistis. Model harus benar-benar memperagakan dan mereview pakaian, bukan sekadar berpose. Mulai tepat dari pose awal foto karakter. Pertahankan identitas wajah, rambut, proporsi tubuh, aksesori, pencahayaan, kamera statis, framing, jarak kamera, dan seluruh detail pakaian. Jangan zoom, crop, reframe, atau menggerakkan kamera. Gerakan halus, aktif, jelas, alami, dan tidak kaku. Lakukan urutan review: perlihatkan tampak depan pakaian dengan jelas; gunakan tangan untuk menunjukkan area kerah/leher bila ada; telusuri detail bagian depan seperti kancing, jahitan, motif, tekstur, lipit, renda, saku atau hiasan hanya jika memang tampak; tampilkan lengan dan potongan sisi dengan putaran badan kecil yang wajar; tunjukkan jatuh kain dan bagian bawah/hem; akhiri dengan gestur ${ending}. Jangan menambahkan detail pakaian atau aksesori yang tidak ada. Tidak ada musik, dialog, atau suara.`;let prompt=common;if(mode==='motion'){prompt=`MOTION CONTROL: gunakan video referensi sebagai sumber gerakan dan tiru urutan, timing, arah, serta ritme gerakannya sedekat mungkin. Jangan mengganti gerakan referensi dengan koreografi baru. Terapkan gerakan itu pada foto karakter. Background dan komposisi dari foto karakter harus tetap identik dari frame pertama sampai frame terakhir; jangan mengambil atau mengganti background dari video referensi. Pertahankan kamera dan framing foto karakter. Jika gerakan referensi tidak memperlihatkan detail baju, prioritaskan gerakan referensi dan jangan mengarang gerakan tambahan. ${common}`}prompt+=`\n\nDetail produk dari pengguna: ${detail}`;document.getElementById('prompt').textContent=prompt;document.getElementById('caption').textContent='Lagi suka sama model outfit ini ✨ Detailnya bikin tampilan terlihat lebih menarik. Cek produknya di keranjang kuning ya!';document.getElementById('description').textContent=detail;document.getElementById('hashtags').textContent='#outfitwanita #fashionwanita #inspirasioutfit #ootdindonesia #racunfashion #tiktokshop';document.getElementById('cover').textContent='Detail Outfit yang Menarik';document.getElementById('concept').textContent='Fashion review singkat: tampilkan keseluruhan outfit, detail bagian depan, tekstur dan potongan, lalu tutup dengan gestur pilihan.';document.getElementById('output').classList.remove('hidden')}
-function copy(id){navigator.clipboard.writeText(document.getElementById(id).textContent).then(()=>alert('Tersalin!')).catch(()=>alert('Browser tidak mengizinkan salin otomatis. Tekan lama teks lalu pilih Salin.'))}function copyAll(){const ids=['prompt','caption','description','hashtags','cover','concept'];const t=ids.map(id=>document.getElementById(id).textContent).join('\n\n');navigator.clipboard.writeText(t).then(()=>alert('Semua hasil tersalin!')).catch(()=>alert('Browser tidak mengizinkan salin otomatis.'))}
-</script></body></html>
+:root{--bg:#f6f1ed;--card:#fff;--ink:#302722;--muted:#796d65;--accent:#765548;--line:#e8ddd5;--soft:#f5eeea}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 system-ui,-apple-system,Segoe UI,sans-serif}
+.wrap{max-width:780px;margin:auto;padding:16px 13px 42px}.hero{background:linear-gradient(135deg,#eadbd0,#f8eee7);padding:23px;border-radius:22px;margin-bottom:14px}.hero h1{font-size:25px;margin:0 0 5px}.hero p{margin:0;color:#68584e}.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;margin:12px 0}.card h2{font-size:17px;margin:0 0 10px}.tabs,.actions{display:flex;gap:8px;flex-wrap:wrap}.tab,button{border:0;border-radius:11px;padding:11px 13px;background:#eee5df;color:var(--ink);font-weight:650;cursor:pointer}.tab.active,button.primary{background:var(--accent);color:#fff}button:disabled{opacity:.45}.grid{display:grid;grid-template-columns:1fr 1fr;gap:11px}label{display:block;font-weight:650;margin:10px 0 5px}input,select,textarea{width:100%;border:1px solid var(--line);border-radius:10px;padding:11px;background:#fff;color:var(--ink);font:inherit}textarea{min-height:86px;resize:vertical}.hint,.small{font-size:12px;color:var(--muted)}.preview{width:100%;max-height:220px;object-fit:contain;background:#f4efeb;border-radius:11px;margin-top:8px;display:none}.ending{display:grid;grid-template-columns:1fr 1fr;gap:8px}.ending label{font-weight:500;background:#faf7f5;border:1px solid var(--line);border-radius:10px;padding:9px;margin:0}.ending input{width:auto}.result{white-space:pre-wrap;background:#fbf8f6;border:1px solid var(--line);border-radius:11px;padding:12px;min-height:65px;overflow-wrap:anywhere}.notice{background:#fff5df;border:1px solid #f0dfb9;padding:10px;border-radius:11px;font-size:13px}.hidden{display:none!important}.cover-wrap{display:grid;grid-template-columns:minmax(0,1fr);gap:10px}.cover-art{position:relative;overflow:hidden;aspect-ratio:9/16;width:min(100%,310px);margin:auto;border-radius:15px;background:linear-gradient(145deg,#e8d8cb,#8c6858);display:flex;align-items:flex-end;padding:22px;color:white;text-align:left;box-shadow:0 8px 24px #38251d24}.cover-art:before{content:"";position:absolute;inset:0;background:linear-gradient(180deg,#21150a00 25%,#21150a99 100%)}.cover-copy{position:relative;z-index:1}.cover-kicker{font-size:10px;letter-spacing:2px;text-transform:uppercase;margin-bottom:8px}.cover-title{font-size:31px;line-height:1.05;font-weight:850;max-width:100%;overflow-wrap:anywhere}.cover-sub{font-size:12px;margin-top:9px;opacity:.9}.cover-art.clean{background:linear-gradient(145deg,#eee5dc,#b79b87);color:#3e2d25}.cover-art.clean:before{background:linear-gradient(180deg,#fff0 30%,#fff8 100%)}.cover-art.dark{background:linear-gradient(145deg,#3b302c,#171312)}.cover-art.rose{background:linear-gradient(145deg,#ead2ce,#9d6e70)}.cover-art .cover-copy{width:100%}.actions{margin-top:10px}.pill{display:inline-block;border-radius:99px;background:var(--soft);padding:4px 9px;font-size:11px;color:var(--muted)}@media(max-width:520px){.grid{grid-template-columns:1fr}.hero h1{font-size:23px}.cover-title{font-size:28px}}
+</style>
+</head>
+<body>
+<main class="wrap">
+<header class="hero"><h1>Fashion Affiliate Studio</h1><p>Satu foto outfit = satu paket konten siap dipakai untuk TikTok.</p></header>
+
+<section class="card">
+<h2>1. Pilih cara membuat video</h2>
+<div class="tabs"><button class="tab active" id="tabImage" type="button" onclick="setMode('image')">Flow biasa · Image-to-Video</button><button class="tab" id="tabMotion" type="button" onclick="setMode('motion')">Motion Control</button></div>
+<p class="hint" id="modeHint">Foto model menjadi frame awal. Gerakan dibuat dari instruksi prompt.</p>
+</section>
+
+<section class="card">
+<h2>2. Masukkan foto dan info outfit</h2>
+<div class="grid">
+<div><label for="modelFile">Foto model / karakter</label><input type="file" accept="image/*" id="modelFile"><img id="modelPreview" class="preview" alt="Pratinjau foto model"></div>
+<div><label for="outfitFile">Foto outfit / produk</label><input type="file" accept="image/*" id="outfitFile"><img id="outfitPreview" class="preview" alt="Pratinjau foto outfit"></div>
+</div>
+<div id="motionUpload" class="hidden"><label for="motionFile">Video referensi gerakan (Motion Control)</label><input type="file" accept="video/*" id="motionFile"><p class="hint">Video ini dipakai sebagai referensi saat kamu mengunggahnya ke Google Flow.</p></div>
+<label for="details">Detail produk yang benar-benar diketahui (opsional)</label><textarea id="details" placeholder="Contoh: blouse warna dusty pink, kerah, kancing depan, lengan panjang..."></textarea>
+<label for="productKind">Jenis produk</label><select id="productKind"><option>Atasan / blouse</option><option>Dress</option><option>Rok</option><option celana>P celana / trousers</option><option>Outer / cardigan</option><option>Setelan</option><option>Hijab</option><option>Sepatu / sandal</option><option>Tas</option><option>Lainnya</option></select>
+<p class="hint">Foto yang dipilih hanya untuk pratinjau lokal. Aplikasi ini tidak mengunggah foto ke server.</p>
+</section>
+
+<section class="card">
+<h2>3. Pilih gerakan akhir</h2>
+<div class="ending">
+<label><input type="radio" name="ending" value="angkat satu tangan membentuk peace sign ✌️ di dekat kamera, sementara tangan lainnya tetap rileks" checked> Peace sign ✌️</label>
+<label><input type="radio" name="ending" value="buat finger-heart kecil dengan satu tangan di dekat pipi, tangan lainnya tetap rileks"> Finger heart dekat pipi 🫰</label>
+<label><input type="radio" name="ending" value="akhiri secara natural dengan tangan kembali rileks di sisi tubuh"> Natural ending</label>
+<label><input type="radio" name="ending" value="buat gestur hand-heart kecil dengan satu tangan dekat pipi, tanpa memakai tangan kedua"> Hand-heart satu tangan 🫶</label>
+</div>
+</section>
+
+<section class="card">
+<h2>4. Buat paket konten</h2>
+<button class="primary" type="button" onclick="generate()">Buat 1 paket konten</button>
+<p class="hint">Satu klik menghasilkan satu paket. Untuk membuat konten kedua dari produk sama, unggah ulang dan buat paket baru.</p>
+<div id="output" class="hidden">
+<label>Prompt Google Flow</label><div class="result" id="prompt"></div><div class="actions"><button type="button" onclick="copy('prompt')">Salin prompt</button></div>
+<label>Prompt ganti outfit (untuk AI editor gambar)</label><div class="result" id="tryon"></div><div class="actions"><button type="button" onclick="copy('tryon')">Salin prompt ganti outfit</button></div>
+<label>Caption TikTok</label><div class="result" id="caption"></div>
+<label>Hashtag</label><div class="result" id="hashtags"></div>
+<label>Judul sampul</label><div class="result" id="coverTitle"></div>
+<label>Konsep video</label><div class="result" id="concept"></div>
+<div class="actions"><button class="primary" type="button" onclick="copyAll()">Salin semua teks</button></div>
+</div>
+</section>
+
+<section class="card">
+<h2>5. Pembuat sampul video</h2>
+<p class="hint">Judul sampul dari paket konten akan otomatis masuk. Kamu bisa mengubahnya dan menyimpan sampul sebagai gambar.</p>
+<label for="coverInput">Teks utama sampul</label><input id="coverInput" value="DETAIL OUTFIT YANG MENARIK" maxlength="52">
+<label for="coverStyle">Gaya sampul</label><select id="coverStyle" onchange="updateCover()"><option value="earth">Beige elegan</option><option value="clean">Minimal clean</option><option value="dark">Cokelat gelap</option><option value="rose">Dusty rose</option></select>
+<label for="coverSub">Teks kecil (opsional)</label><input id="coverSub" value="OUTFIT CHECK">
+<div class="cover-wrap"><div id="coverArt" class="cover-art"><div class="cover-copy"><div class="cover-kicker" id="coverKicker">OUTFIT CHECK</div><div class="cover-title" id="coverPreviewTitle">DETAIL OUTFIT YANG MENARIK</div><div class="cover-sub">FASHION FINDS</div></div></div></div>
+<div class="actions"><button class="primary" type="button" onclick="downloadCover()">Simpan sampul PNG</button></div>
+<p class="small">Sampul ini berupa desain tipografi tanpa foto model. Tambahkan foto produk di editor TikTok jika ingin menampilkan produknya.</p>
+</section>
+
+<section class="card">
+<h2>Catatan kemampuan</h2>
+<div class="notice">Aplikasi ini membuat prompt, caption, hashtag, dan file sampul. Video tetap dibuat di Google Flow. Prompt ganti outfit membantu AI editor gambar, tetapi tidak mengubah pakaian langsung di halaman ini karena belum terhubung ke layanan AI gambar.</div>
+</section>
+</main>
+<script>
+let mode='image';
+function setMode(m){mode=m;document.getElementById('tabImage').classList.toggle('active',m==='image');document.getElementById('tabMotion').classList.toggle('active',m==='motion');document.getElementById('motionUpload').classList.toggle('hidden',m!=='motion');document.getElementById('modeHint').textContent=m==='image'?'Foto model menjadi frame awal. Gerakan dibuat dari instruksi prompt.':'Foto karakter + video referensi. Ikuti gerakan video referensi sedekat mungkin dan pertahankan background foto karakter.'}
+function preview(input,img){input.addEventListener('change',()=>{const f=input.files&&input.files[0];if(!f)return;img.src=URL.createObjectURL(f);img.style.display='block'})}
+preview(document.getElementById('modelFile'),document.getElementById('modelPreview'));preview(document.getElementById('outfitFile'),document.getElementById('outfitPreview'));
+function generate(){
+ const detail=document.getElementById('details').value.trim();
+ const kind=document.getElementById('productKind').value;
+ const ending=document.querySelector('input[name="ending"]:checked').value;
+ const truth=detail?('Gunakan detail produk berikut hanya sebagai panduan yang diberikan pengguna: '+detail+'. Jangan menambahkan klaim bahan, kualitas, ukuran, harga, atau fitur yang tidak diketahui.'):'Periksa foto outfit dengan teliti. Tampilkan hanya detail pakaian yang benar-benar terlihat; jangan mengarang bahan, ukuran, fitur, atau klaim.';
+ const identity='Pertahankan identitas dan penampilan model pada foto karakter: wajah, rambut, proporsi tubuh, warna kulit, aksesori, dan bentuk tubuh konsisten. Pertahankan pakaian sesuai foto produk/outfit yang diberikan; jangan mengubah warna, motif, potongan, jumlah kancing, panjang lengan, atau detailnya.';
+ const camera='Kamera statis. Pertahankan framing, jarak kamera, sudut, perspektif, pencahayaan, dan komposisi foto awal. Jangan zoom, crop, reframe, menggeser kamera, atau mengubah latar.';
+ const review='Lakukan review visual yang jelas dan berurutan, bukan pose kosong: (1) mulai persis dari pose awal foto; tahan sebentar agar tampilan depan outfit terbaca; (2) hadapkan bagian depan pakaian ke kamera dan beri ruang agar siluet terlihat dari bahu sampai bagian bawah yang masuk frame; (3) gunakan tangan bebas untuk menyentuh dan menunjukkan kerah/leher jika ada, lalu telusuri detail depan seperti kancing, motif, jahitan, renda, lipit, saku, bordir atau aksen yang memang terlihat; (4) rapikan satu bagian kain dengan gerakan ringan agar tekstur dan jatuh kain terlihat; (5) tunjukkan lengan dan potongan samping dengan sedikit rotasi badan yang alami, tanpa membelakangi kamera terlalu lama; (6) tampilkan bagian bawah/hem jika masuk frame. Setiap gerakan harus punya tujuan memperlihatkan produk, tidak mengulang gerakan acak, tidak menutupi detail terlalu lama, dan tidak menarik kain secara berlebihan.';
+ let prompt='';
+ if(mode==='image'){
+  prompt='GOOGLE FLOW — IMAGE-TO-VIDEO\nBuat video fashion product review vertikal 9:16, fotorealistis, natural, dan meyakinkan. Gunakan foto model sebagai frame pertama dan acuan utama. '+identity+' '+camera+' '+review+' '+truth+' Setelah seluruh review selesai, akhiri dengan: '+ending+'. Gerakan halus tetapi terlihat jelas, tidak kaku, tanpa perubahan bentuk tubuh atau pakaian. Tangan yang tidak memegang objek tetap anatomis normal; jangan menambah jari atau anggota tubuh. Tidak ada musik, dialog, voice-over, teks otomatis, atau watermark.';
+ }else{
+  prompt='GOOGLE FLOW — MOTION CONTROL\nGunakan foto model/karakter sebagai sumber identitas, pakaian, background, pencahayaan, framing, dan komposisi. Gunakan video referensi hanya sebagai sumber gerakan. Tiru gerakan, urutan, timing, arah tubuh, posisi tangan, dan ritme video referensi sedekat mungkin; jangan membuat koreografi baru dan jangan mengganti gerakan referensi dengan urutan review buatan. '+identity+' '+camera+' BACKGROUND LOCK: pertahankan seluruh background asli dari foto karakter dari frame pertama sampai frame terakhir. Jangan mengambil background dari video referensi, jangan mengganti ruangan, jangan menambah atau menghilangkan benda, dan jangan menggeser perspektif. '+truth+' Jika gerakan referensi secara alami memperlihatkan outfit, pertahankan gerakan itu agar produk terbaca. Jangan memaksa gerakan tambahan yang tidak ada di video referensi. Pada akhir gerakan, jika sesuai dengan referensi dan tidak merusak kecocokan gerak, gunakan akhiran: '+ending+'. Tidak ada musik, dialog, voice-over, teks otomatis, atau watermark.';
+ }
+ document.getElementById('prompt').textContent=prompt;
+ document.getElementById('tryon').textContent='Edit foto model dengan mengganti hanya pakaian yang dikenakan menjadi outfit dari foto produk referensi. Pertahankan wajah, identitas, rambut, warna kulit, bentuk dan proporsi tubuh, pose, posisi tangan, latar belakang, pencahayaan, sudut kamera, framing, serta semua aksesori asli model. Salin outfit referensi seakurat mungkin: warna, motif, model kerah, kancing, jahitan, lengan, panjang, potongan, tekstur visual, dan detail yang terlihat. Pakaian harus mengikuti bentuk tubuh dan pose secara realistis dengan lipatan kain alami. Jangan mengubah bagian lain dari foto, jangan menambahkan aksesori, dan jangan menciptakan detail yang tidak ada pada referensi.';
+ document.getElementById('caption').textContent='Outfit '+kind.toLowerCase()+' yang simpel tapi tetap menarik dipakai ✨ Lihat detail produknya di keranjang kuning.';
+ document.getElementById('hashtags').textContent='#outfitwanita #fashionwanita #ootdindonesia #inspirasioutfit #racunfashion #tiktokshop';
+ const title=kind==='Atasan / blouse'?'Blouse Simpel, Detailnya Menarik':kind+' yang Layak Dilirik';
+ document.getElementById('coverTitle').textContent=title;
+ document.getElementById('concept').textContent='Review visual '+kind.toLowerCase()+': mulai dari tampilan keseluruhan, lanjutkan ke detail desain yang benar-benar terlihat, tunjukkan potongan dan jatuh pakaian, lalu tutup dengan gestur pilihan.';
+ document.getElementById('coverInput').value=title.toUpperCase();
+ updateCover();document.getElementById('output').classList.remove('hidden');
+}
+function copy(id){const t=document.getElementById(id).textContent;if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).then(()=>alert('Tersalin!')).catch(()=>fallbackCopy(t))}else fallbackCopy(t)}
+function fallbackCopy(t){const a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();try{document.execCommand('copy');alert('Tersalin!')}catch(e){alert('Tekan lama teks, lalu pilih Salin.')}a.remove()}
+function copyAll(){const ids=['prompt','tryon','caption','hashtags','coverTitle','concept'];fallbackCopy(ids.map(id=>document.getElementById(id).textContent).join('\n\n'))}
+function updateCover(){const title=document.getElementById('coverInput').value.trim()||'OUTFIT CHECK';const style=document.getElementById('coverStyle').value;const art=document.getElementById('coverArt');art.className='cover-art '+(style==='earth'?'':style);document.getElementById('coverPreviewTitle').textContent=title;document.getElementById('coverKicker').textContent=document.getElementById('coverSub').value.trim()||'OUTFIT CHECK'}
+document.getElementById('coverInput').addEventListener('input',updateCover);document.getElementById('coverSub').addEventListener('input',updateCover);
+function downloadCover(){
+ const title=document.getElementById('coverInput').value.trim()||'OUTFIT CHECK';
+ const kicker=document.getElementById('coverSub').value.trim()||'OUTFIT CHECK';
+ const style=document.getElementById('coverStyle').value;
+ const c=document.createElement('canvas');c.width=1080;c.height=1920;const x=c.getContext('2d');
+ const palettes={earth:['#eadbd0','#765548','#302722'],clean:['#eee5dc','#c3aa98','#3e2d25'],dark:['#3b302c','#171312','#fff8f3'],rose:['#ead2ce','#9d6e70','#fff8f5']};const p=palettes[style];
+ const g=x.createLinearGradient(0,0,900,1920);g.addColorStop(0,p[0]);g.addColorStop(1,p[1]);x.fillStyle=g;x.fillRect(0,0,1080,1920);
+ const overlay=x.createLinearGradient(0,800,0,1920);overlay.addColorStop(0,'rgba(0,0,0,0)');overlay.addColorStop(1,style==='clean'?'rgba(255,255,255,.58)':'rgba(25,15,12,.52)');x.fillStyle=overlay;x.fillRect(0,0,1080,1920);
+ x.fillStyle=p[2];x.textAlign='left';x.font='600 34px Arial';x.fillText(kicker.toUpperCase().slice(0,36),88,1510);
+ let words=title.toUpperCase().split(/\s+/),lines=[],line='';x.font='800 112px Arial';for(const w of words){const test=line?line+' '+w:w;if(x.measureText(test).width>900&&line){lines.push(line);line=w}else line=test}if(line)lines.push(line);
+ let y=1640-(lines.length-1)*126;for(const l of lines.slice(0,4)){x.fillText(l,88,y);y+=126}
+ x.font='500 28px Arial';x.fillText('FASHION FINDS',90,1850);
+ const a=document.createElement('a');a.download='sampul-fashion-affiliate.png';a.href=c.toDataURL('image/png');a.click();
+}
+updateCover();
+</script>
+</body></html>
