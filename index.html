@@ -113,10 +113,14 @@ function downloadCover(){
  const title=document.getElementById('coverInput').value.trim()||'OUTFIT CHECK';
  const kicker=document.getElementById('coverSub').value.trim()||'OUTFIT CHECK';
  const style=document.getElementById('coverStyle').value;
- const c=document.createElement('canvas');c.width=1080;c.height=1920;const x=c.getContext('2d');
- const palettes={earth:['#eadbd0','#765548','#302722'],clean:['#eee5dc','#c3aa98','#3e2d25'],dark:['#3b302c','#171312','#fff8f3'],rose:['#ead2ce','#9d6e70','#fff8f5']};const p=palettes[style];
+ const c=document.createElement('canvas');c.width=1080;c.height=1920;
+ const x=c.getContext('2d');
+ if(!x){alert('Gagal membuat gambar. Coba buka ulang halaman di Chrome.');return}
+ const palettes={earth:['#eadbd0','#765548','#302722'],clean:['#eee5dc','#c3aa98','#3e2d25'],dark:['#3b302c','#171312','#fff8f3'],rose:['#ead2ce','#9d6e70','#fff8f5']};
+ const p=palettes[style]||palettes.earth;
  const photo=document.getElementById('coverPhoto');
- if(photo.src && photo.style.display!=='none' && photo.complete && photo.naturalWidth){
+ if(photo.style.display!=='none'&&photo.getAttribute('src')){
+  if(!photo.complete||!photo.naturalWidth){alert('Foto masih diproses. Tunggu sampai foto tampil penuh, lalu tekan Simpan Sampul PNG lagi.');return}
   const scale=Math.max(1080/photo.naturalWidth,1920/photo.naturalHeight),w=photo.naturalWidth*scale,h=photo.naturalHeight*scale;
   x.drawImage(photo,(1080-w)/2,(1920-h)/2,w,h);
  }else{
@@ -124,10 +128,17 @@ function downloadCover(){
  }
  const overlay=x.createLinearGradient(0,700,0,1920);overlay.addColorStop(0,'rgba(0,0,0,.08)');overlay.addColorStop(1,style==='clean'?'rgba(255,255,255,.70)':'rgba(25,15,12,.62)');x.fillStyle=overlay;x.fillRect(0,0,1080,1920);
  x.fillStyle=p[2];x.textAlign='left';x.font='600 34px Arial';x.fillText(kicker.toUpperCase().slice(0,36),88,1510);
- let words=title.toUpperCase().split(/\s+/),lines=[],line='';x.font='800 112px Arial';for(const w of words){const test=line?line+' '+w:w;if(x.measureText(test).width>900&&line){lines.push(line);line=w}else line=test}if(line)lines.push(line);
- let y=1640-(lines.length-1)*126;for(const l of lines.slice(0,4)){x.fillText(l,88,y);y+=126}
+ const words=title.toUpperCase().split(/\\s+/);let lines=[],line='';x.font='800 112px Arial';
+ for(const word of words){const test=line?line+' '+word:word;if(x.measureText(test).width>900&&line){lines.push(line);line=word}else line=test}
+ if(line)lines.push(line);
+ let y=1640-(Math.min(lines.length,4)-1)*126;for(const l of lines.slice(0,4)){x.fillText(l,88,y);y+=126}
  x.font='500 28px Arial';x.fillText('FASHION FINDS',90,1850);
- const a=document.createElement('a');a.download='sampul-fashion-affiliate.png';a.href=c.toDataURL('image/png');a.click();
+ try{
+  const data=c.toDataURL('image/png');
+  const a=document.createElement('a');a.href=data;a.download='sampul-fashion-affiliate.png';a.style.display='none';
+  document.body.appendChild(a);a.click();a.remove();
+  alert('Sampul dibuat. Jika unduhan tidak langsung muncul, cek folder Download di HP.');
+ }catch(err){alert('Browser menolak menyimpan gambar. Coba buka halaman ini di Chrome, bukan pratinjau aplikasi.')}
 }
 updateCover();
 </script>
