@@ -48,7 +48,7 @@
 
 <section class="card">
 <h2>4. Buat paket konten</h2>
-<button class="primary" type="button" onclick="generate()">Buat 1 paket konten</button>
+<button class="primary" id="generateBtn" type="button">Buat 1 paket konten</button>
 <p class="hint">Satu klik menghasilkan satu paket. Untuk membuat konten kedua dari produk sama, unggah ulang dan buat paket baru.</p>
 <div id="output" class="hidden">
 <label>Prompt Google Flow</label><div class="result" id="prompt"></div><div class="actions"><button type="button" onclick="copy('prompt')">Salin prompt</button></div>
@@ -82,7 +82,7 @@ let mode='image';
 function setMode(m){mode=m;document.getElementById('tabImage').classList.toggle('active',m==='image');document.getElementById('tabMotion').classList.toggle('active',m==='motion');document.getElementById('motionUpload').classList.toggle('hidden',m!=='motion');document.getElementById('modeHint').textContent=m==='image'?'Foto model menjadi frame awal. Gerakan dibuat dari instruksi prompt.':'Foto karakter + video referensi. Ikuti gerakan video referensi sedekat mungkin dan pertahankan background foto karakter.'}
 function preview(input,img){input.addEventListener('change',()=>{const f=input.files&&input.files[0];if(!f)return;img.src=URL.createObjectURL(f);img.style.display='block'})}
 preview(document.getElementById('modelFile'),document.getElementById('modelPreview'));preview(document.getElementById('outfitFile'),document.getElementById('outfitPreview'));
-function generate(){
+window.generate=function(){
  const detail=document.getElementById('details').value.trim();
  const kind=document.getElementById('productKind').value;
  const ending=document.querySelector('input[name="ending"]:checked').value;
